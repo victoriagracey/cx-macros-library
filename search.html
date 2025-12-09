@@ -5,6 +5,21 @@
   <title>CX Library Search</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
+    .corner-glow {
+  position: fixed;
+  top: -80px;
+  right: -80px;
+  width: 260px;
+  height: 260px;
+  background: radial-gradient(
+    circle at center,
+    rgba(139, 92, 246, 0.28),
+    rgba(255, 255, 255, 0) 70%
+  );
+  filter: blur(14px);
+  pointer-events: none;
+  z-index: 0;
+}
     :root {
       --bg: #f7f3ff;
       --bg-alt: #ffffff;
@@ -291,6 +306,7 @@
   </style>
 </head>
 <body>
+  <div class="corner-glow"></div>
   <div class="app">
     <header class="header">
       <h1 class="title">CX Library Search</h1>
