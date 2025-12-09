@@ -14,6 +14,58 @@ The goals of this library are:
 
 ---
 
+## 📁 Library Overview
+
+This library is organised into two main sections:
+
+### **1. Macros**
+Reusable, ready-to-send customer support replies for common situations.
+
+- 👉 [General Macros](macros/general.md)  
+- 👉 [Refunds & Compensation](macros/refunds-and-compensation.md)  
+- 👉 [Technical Issues](macros/technical-issues.md)  
+- 👉 [Membership & Billing](macros/membership-and-billing.md)  
+- 👉 [Social Media Responses](macros/social-media.md)  
+- 👉 [Accessibility-Friendly Macros](macros/accessibility.md)  
+- 👉 [Tone Variations](macros/tone-variations.md)  
+
+---
+
+### **2. Processes**
+System-neutral workflows for consistent, high-quality customer support.
+
+- 👉 [Troubleshooting Workflows](processes/troubleshooting-workflows.md)  
+- 👉 [Outage Playbook](processes/outage-playbook.md)  
+- 👉 [Cancellations Process](processes/cancellations-process.md)  
+- 👉 [Refunds Process](processes/refunds-process.md)  
+- 👉 [Verification Checklist](processes/verification-checklist.md)  
+
+---
+
+## 🧭 Purpose
+
+This library exists to:
+- Provide fast, consistent support replies  
+- Help new agents onboard quickly  
+- Create dependable workflows across any platform  
+- Support strong tone, clarity, and accessibility  
+- Build a professional, reusable toolkit for future CX roles  
+
+---
+
+## 🌱 Future Enhancements (Roadmap)
+Planned additions:
+
+- AI-optimised macros  
+- Internal QA checklist  
+- Escalation severity matrix  
+- Customer journey notes  
+- Language variations / multilingual macros  
+
+(Work in progress — contributions from future Victoria also welcome 💜)
+
+---
+
 ## Structure
 
 - `style-guide.md` – core tone and principles
