@@ -1,6 +1,5 @@
-<p align="center">
-  <img src="https://svg-banners.vercel.app/api?type=glitch&text1=CX%20Macros%20%26%20Phrases%20Library&width=1000&height=300" alt="CX Macros Banner"/>
-</p>
+![CX Macros & Phrases Library](https://svg-banners.vercel.app/api?type=glitch&text1=CX%20Macros%20%26%20Phrases%20Library&width=1000&height=300)
+
 
 # CX Macros & Phrases Library
 
