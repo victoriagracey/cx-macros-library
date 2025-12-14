@@ -3,266 +3,501 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>CX Library Search</title>
+  <title>CX Macros Library — Search</title>
+
   <style>
     :root{
-      --bg:#f7f3ff; --card:#fff; --text:#2f2a3f; --muted:#6b647f;
-      --accent:#7b5dd8; --border:#ddd3ff;
+      --bg: #f7f3ff;
+      --bg-2:#ffffff;
+      --ink:#2f2a3f;
+      --muted:#6b647f;
+      --accent:#7b5dd8;
+      --accent-2:#b79cff;
+      --soft:#e9e1ff;
+      --border:#ddd3ff;
+      --shadow: 0 18px 45px rgba(23, 15, 46, .10);
+      --shadow-soft: 0 10px 30px rgba(23, 15, 46, .08);
+      --radius: 22px;
+      --radius-2: 18px;
     }
-    *{box-sizing:border-box}
-    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--text)}
-    .wrap{max-width:980px;margin:0 auto;padding:28px 16px 56px}
-    h1{margin:0 0 8px;font-size:28px}
-    p{margin:0 0 18px;color:var(--muted);line-height:1.5}
 
-    .bar{display:flex;gap:10px;align-items:center;background:var(--card);border:1px solid var(--border);
-      border-radius:16px;padding:10px 12px;box-shadow:0 10px 30px rgba(0,0,0,.06)}
-    .bar input{flex:1;border:0;outline:0;font-size:16px;background:transparent;color:var(--text)}
-    .clear{border:0;background:transparent;font-size:18px;cursor:pointer;color:var(--muted);padding:6px 8px;border-radius:10px}
-    .clear:hover{background:#f1ecff}
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; }
+    body{
+      margin:0;
+      font-family: system-ui,-apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color:var(--ink);
+      background:
+        radial-gradient(1200px 800px at 10% -10%, #efe9ff 0%, transparent 55%),
+        radial-gradient(900px 600px at 100% 0%, #efe9ff 0%, transparent 50%),
+        var(--bg);
+    }
 
-    .tabs{display:flex;gap:10px;margin:14px 0 0}
-    .tab{border:1px solid var(--border);background:var(--card);border-radius:999px;padding:8px 12px;cursor:pointer;
-      color:var(--muted);font-weight:600}
-    .tab[aria-pressed="true"]{color:var(--text);border-color:var(--accent);box-shadow:0 10px 25px rgba(123,93,216,.18)}
-    .meta{margin:14px 0 10px;color:var(--muted);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+    .wrap{
+      max-width: 1040px;
+      margin: 0 auto;
+      padding: 26px 16px 60px;
+    }
 
-    .list{display:grid;gap:10px;margin-top:10px}
-    .item{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:14px 14px 12px;
-      box-shadow:0 10px 30px rgba(0,0,0,.05)}
-    .top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
-    .title{margin:0;font-size:16px}
-    .badge{font-size:12px;padding:4px 10px;border-radius:999px;border:1px solid var(--border);color:var(--muted)}
-    .badge.macro{border-color:#cfe7d6;background:#f4fbf6}
-    .badge.process{border-color:#d5d8fb;background:#f5f6ff}
-    .desc{margin:6px 0 0;color:var(--muted);line-height:1.45;font-size:14px}
-    .tags{margin:10px 0 0;display:flex;gap:6px;flex-wrap:wrap}
-    .tag{font-size:12px;color:var(--muted);border:1px solid var(--border);border-radius:999px;padding:3px 8px}
-    a{color:inherit;text-decoration:none}
-    a:hover .title{text-decoration:underline}
-    .empty{padding:16px;color:var(--muted)}
-    .status{font-size:13px;color:var(--muted)}
-    code{background:#f1ecff;padding:2px 6px;border-radius:8px}
+    /* Header */
+    .hero{
+      position:relative;
+      background: linear-gradient(180deg, var(--bg-2), #fcfbff);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 18px 16px;
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .hero:before{
+      content:"";
+      position:absolute;
+      inset:auto -120px -120px auto;
+      width: 260px;
+      height: 260px;
+      background: radial-gradient(circle at 30% 30%, var(--accent-2), transparent 60%),
+                  radial-gradient(circle at 70% 70%, var(--accent), transparent 60%);
+      filter: blur(2px);
+      opacity:.22;
+      transform: rotate(8deg);
+      pointer-events:none;
+    }
+
+    .toprow{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    h1{
+      margin:0;
+      font-size: 26px;
+      letter-spacing: .2px;
+    }
+    .subtitle{
+      margin: 6px 0 0;
+      color: var(--muted);
+      line-height: 1.45;
+      max-width: 70ch;
+    }
+
+    .nav{
+      display:flex;
+      gap:10px;
+      flex-wrap: wrap;
+      align-items:center;
+      justify-content:flex-end;
+    }
+    .nav a{
+      text-decoration:none;
+      color: var(--muted);
+      font-weight: 650;
+      border: 1px solid var(--border);
+      background: #ffffffcc;
+      padding: 8px 12px;
+      border-radius: 999px;
+      box-shadow: 0 10px 25px rgba(123,93,216,.10);
+      transition: transform .08s ease, border-color .12s ease, color .12s ease;
+    }
+    .nav a:hover{
+      transform: translateY(-1px);
+      border-color: var(--accent);
+      color: var(--ink);
+    }
+
+    /* Search bar */
+    .bar{
+      margin-top: 14px;
+      display:flex;
+      gap: 10px;
+      align-items:center;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 10px 12px;
+      box-shadow: var(--shadow-soft);
+    }
+    .bar input{
+      flex:1;
+      border:0;
+      outline:0;
+      font-size: 16px;
+      background: transparent;
+      color: var(--ink);
+    }
+    .btn-clear{
+      border:0;
+      background: var(--soft);
+      color: var(--muted);
+      font-weight: 800;
+      width: 40px;
+      height: 40px;
+      border-radius: 999px;
+      cursor:pointer;
+      transition: transform .08s ease, background .12s ease;
+    }
+    .btn-clear:hover{ transform: translateY(-1px); background:#dfd5ff; }
+
+    /* Tabs / stats row */
+    .row{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    .tabs{
+      display:flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items:center;
+    }
+
+    .tab{
+      border: 1px solid var(--border);
+      background: #fff;
+      color: var(--muted);
+      font-weight: 750;
+      padding: 8px 12px;
+      border-radius: 999px;
+      cursor:pointer;
+      transition: transform .08s ease, border-color .12s ease, color .12s ease, box-shadow .12s ease;
+      box-shadow: 0 10px 25px rgba(123,93,216,.08);
+    }
+    .tab:hover{
+      transform: translateY(-1px);
+      border-color: var(--accent);
+      color: var(--ink);
+    }
+    .tab[aria-pressed="true"]{
+      border-color: var(--accent);
+      color: var(--ink);
+      box-shadow: 0 18px 45px rgba(123,93,216,.18);
+    }
+
+    .meta{
+      color: var(--muted);
+      font-size: 13px;
+      display:flex;
+      gap: 10px;
+      align-items:center;
+      flex-wrap: wrap;
+      justify-content:flex-end;
+    }
+    .pill{
+      border: 1px dashed var(--border);
+      background: #ffffffaa;
+      border-radius: 999px;
+      padding: 6px 10px;
+    }
+
+    /* Results */
+    .results{
+      margin-top: 14px;
+      display:grid;
+      gap: 12px;
+    }
+
+    .card{
+      background: linear-gradient(180deg, #fff, #fdfcff);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-2);
+      padding: 14px 14px 12px;
+      box-shadow: var(--shadow-soft);
+      transition: transform .10s ease, box-shadow .14s ease, border-color .14s ease;
+      position:relative;
+      overflow:hidden;
+    }
+    .card:before{
+      content:"";
+      position:absolute;
+      inset:-70px -70px auto auto;
+      width: 160px;
+      height: 160px;
+      background: radial-gradient(circle at 30% 30%, var(--accent-2), transparent 60%),
+                  radial-gradient(circle at 70% 70%, var(--accent), transparent 60%);
+      opacity:.12;
+      pointer-events:none;
+      transform: rotate(10deg);
+    }
+
+    .card:hover{
+      transform: translateY(-2px);
+      border-color: var(--accent);
+      box-shadow: 0 20px 55px rgba(23,15,46,.14);
+    }
+
+    .card a{
+      text-decoration:none;
+      color: inherit;
+      display:block;
+      position:relative;
+      z-index:1;
+    }
+
+    .card-top{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap: 12px;
+    }
+
+    .title{
+      margin:0;
+      font-size: 16px;
+      letter-spacing:.2px;
+    }
+    .desc{
+      margin: 7px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.45;
+      max-width: 90ch;
+    }
+
+    .badge{
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 4px 10px;
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--muted);
+      background:#fff;
+      white-space: nowrap;
+    }
+    .badge.macro{ background:#f4fbf6; border-color:#cfe7d6; }
+    .badge.process{ background:#f5f6ff; border-color:#d5d8fb; }
+
+    .tags{
+      margin-top: 10px;
+      display:flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .tag{
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 3px 8px;
+      font-size: 12px;
+      color: var(--muted);
+      background:#fff;
+    }
+
+    .empty{
+      margin-top: 14px;
+      color: var(--muted);
+      background:#ffffffaa;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-2);
+      padding: 14px;
+      box-shadow: var(--shadow-soft);
+    }
+    code{
+      background:#f1ecff;
+      padding: 2px 6px;
+      border-radius: 10px;
+    }
   </style>
 </head>
 
 <body>
   <div class="wrap">
-    <h1>CX Library Search</h1>
-    <p>Type what you need (e.g. “refund”, “outage”, “billing”, “accessibility”) and filter by macros or processes.</p>
+    <div class="hero">
+      <div class="toprow">
+        <div>
+          <h1>CX Macros Library — Search</h1>
+          <p class="subtitle">
+            Search across macros and processes. Keep it simple: type a topic, then filter.
+          </p>
+        </div>
+        <div class="nav">
+          <a href="./README.md">README</a>
+          <a href="./macros/accessibility.md">Macros</a>
+          <a href="./processes/outage-playbook.md">Processes</a>
+        </div>
+      </div>
 
-    <div class="bar">
-      <input id="q" type="search" placeholder="Search macros + processes…" autocomplete="off" />
-      <button class="clear" id="clear" title="Clear">✕</button>
+      <div class="bar">
+        <input id="q" type="search" placeholder="Search… (refunds, billing, outage, accessibility)" autocomplete="off" />
+        <button class="btn-clear" id="clear" title="Clear">✕</button>
+      </div>
+
+      <div class="row">
+        <div class="tabs" role="group" aria-label="Filter">
+          <button class="tab" data-filter="all" aria-pressed="true">All <span id="countAll">0</span></button>
+          <button class="tab" data-filter="macro" aria-pressed="false">Macros <span id="countMacros">0</span></button>
+          <button class="tab" data-filter="process" aria-pressed="false">Processes <span id="countProcesses">0</span></button>
+        </div>
+
+        <div class="meta">
+          <span class="pill"><span id="shown">0</span> shown</span>
+          <span class="pill" id="status">Loading…</span>
+        </div>
+      </div>
     </div>
 
-    <div class="tabs" role="group" aria-label="Filter">
-      <button class="tab" data-filter="all" aria-pressed="true">All <span id="countAll">0</span></button>
-      <button class="tab" data-filter="macro" aria-pressed="false">Macros <span id="countMacros">0</span></button>
-      <button class="tab" data-filter="process" aria-pressed="false">Processes <span id="countProcesses">0</span></button>
-    </div>
+    <div class="results" id="list"></div>
 
-    <div class="meta">
-      <div><span id="shown">0</span> items</div>
-      <div class="status" id="status">Loading…</div>
-    </div>
-
-    <div class="list" id="list"></div>
     <div class="empty" id="empty" style="display:none;">
-      No matches found. Try a broader term like <code>refund</code>, <code>billing</code>, <code>technical</code>, or <code>outage</code>.
+      No matches found. Try <code>refund</code>, <code>billing</code>, <code>technical</code>, <code>outage</code>, or <code>verification</code>.
     </div>
   </div>
 
 <script>
-/**
- * Works in two modes:
- * 1) Auto-index: pulls filenames from your repo via GitHub API (no build step).
- * 2) Fallback: uses SEED below if API rate-limits or fails.
- *
- * You can edit SEED anytime to make results prettier (titles, tags, descriptions).
- */
-const OWNER = "victoriagracey";
-const REPO  = "cx-macros-library";
-const BRANCH = "main";
+  // Repo settings
+  const OWNER = "victoriagracey";
+  const REPO  = "cx-macros-library";
+  const BRANCH = "main";
 
-const SEED = [
-  // You can add your own entries here any time.
-  // { type:"macro", title:"Refund approved", url:"macros/refunds-and-compensation.md", tags:["refunds","payments"], description:"Refund processed + what to expect next." },
-];
+  // Optional: Seed map (only used if GitHub API fails / rate-limits).
+  // You can leave this empty now that your folders exist.
+  const SEED = [
+    // Example:
+    // { type:"macro", title:"Refunds & Compensation", url:"macros/refunds-and-compensation.md", tags:["refunds","goodwill"], description:"When to refund and how to phrase it." }
+  ];
 
-const state = {
-  filter: "all",
-  q: "",
-  items: []
-};
+  const state = { filter: "all", q: "", items: [] };
 
-const els = {
-  q: document.getElementById("q"),
-  clear: document.getElementById("clear"),
-  list: document.getElementById("list"),
-  empty: document.getElementById("empty"),
-  shown: document.getElementById("shown"),
-  status: document.getElementById("status"),
-  countAll: document.getElementById("countAll"),
-  countMacros: document.getElementById("countMacros"),
-  countProcesses: document.getElementById("countProcesses"),
-  tabs: Array.from(document.querySelectorAll(".tab")),
-};
-
-function niceTitleFromFilename(name){
-  // "refunds-and-compensation.md" -> "Refunds And Compensation"
-  return name.replace(/\.[^/.]+$/, "")
-    .replace(/[-_]+/g, " ")
-    .replace(/\b\w/g, c => c.toUpperCase());
-}
-
-function makeItem({type, path, name}){
-  return {
-    type,
-    title: niceTitleFromFilename(name),
-    url: path, // relative to the site root
-    tags: [],
-    description: ""
+  const els = {
+    q: document.getElementById("q"),
+    clear: document.getElementById("clear"),
+    list: document.getElementById("list"),
+    empty: document.getElementById("empty"),
+    shown: document.getElementById("shown"),
+    status: document.getElementById("status"),
+    countAll: document.getElementById("countAll"),
+    countMacros: document.getElementById("countMacros"),
+    countProcesses: document.getElementById("countProcesses"),
+    tabs: Array.from(document.querySelectorAll(".tab")),
   };
-}
 
-function score(item, q){
-  if(!q) return 1;
-  const hay = (item.title + " " + (item.description||"") + " " + (item.tags||[]).join(" ")).toLowerCase();
-  const needle = q.toLowerCase().trim();
-  if(!needle) return 1;
-  if(hay.includes(needle)) return 10;
-  // light token scoring
-  const parts = needle.split(/\s+/).filter(Boolean);
-  let s = 0;
-  for(const p of parts) if(hay.includes(p)) s += 3;
-  return s;
-}
-
-function filteredItems(){
-  let items = state.items.slice();
-
-  if(state.filter !== "all"){
-    items = items.filter(i => i.type === state.filter);
+  function niceTitleFromFilename(name){
+    return name
+      .replace(/\.[^/.]+$/, "")
+      .replace(/[-_]+/g, " ")
+      .replace(/\b\w/g, c => c.toUpperCase());
   }
 
-  const q = state.q.trim();
-  items = items
-    .map(i => ({...i, _score: score(i, q)}))
-    .filter(i => q ? i._score > 0 : true)
-    .sort((a,b) => b._score - a._score || a.title.localeCompare(b.title));
-
-  return items;
-}
-
-function render(){
-  const items = filteredItems();
-  els.list.innerHTML = "";
-
-  els.shown.textContent = String(items.length);
-  els.empty.style.display = items.length ? "none" : "block";
-
-  for(const item of items){
-    const card = document.createElement("div");
-    card.className = "item";
-
-    const badgeClass = item.type === "macro" ? "badge macro" : "badge process";
-    const badgeText  = item.type === "macro" ? "Macro" : "Process";
-
-    const tags = (item.tags || []).map(t => `<span class="tag">${escapeHtml(t)}</span>`).join("");
-
-    card.innerHTML = `
-      <a href="${escapeAttr(item.url)}">
-        <div class="top">
-          <h3 class="title">${escapeHtml(item.title)}</h3>
-          <span class="${badgeClass}">${badgeText}</span>
-        </div>
-        ${item.description ? `<div class="desc">${escapeHtml(item.description)}</div>` : ``}
-        ${tags ? `<div class="tags">${tags}</div>` : ``}
-      </a>
-    `;
-    els.list.appendChild(card);
+  function makeItem({type, path, name}){
+    return { type, title: niceTitleFromFilename(name), url: path, tags: [], description: "" };
   }
-}
 
-function setFilter(next){
-  state.filter = next;
-  for(const b of els.tabs){
-    b.setAttribute("aria-pressed", b.dataset.filter === next ? "true" : "false");
+  function score(item, q){
+    if(!q) return 1;
+    const hay = (item.title + " " + (item.description||"") + " " + (item.tags||[]).join(" ")).toLowerCase();
+    const needle = q.toLowerCase().trim();
+    if(!needle) return 1;
+    if(hay.includes(needle)) return 10;
+    const parts = needle.split(/\s+/).filter(Boolean);
+    let s = 0;
+    for(const p of parts) if(hay.includes(p)) s += 3;
+    return s;
   }
-  render();
-}
 
-function updateCounts(){
-  const all = state.items.length;
-  const macros = state.items.filter(i => i.type === "macro").length;
-  const procs = state.items.filter(i => i.type === "process").length;
+  function filteredItems(){
+    let items = state.items.slice();
+    if(state.filter !== "all") items = items.filter(i => i.type === state.filter);
 
-  els.countAll.textContent = String(all);
-  els.countMacros.textContent = String(macros);
-  els.countProcesses.textContent = String(procs);
-}
+    const q = state.q.trim();
+    items = items
+      .map(i => ({...i, _score: score(i, q)}))
+      .filter(i => q ? i._score > 0 : true)
+      .sort((a,b) => b._score - a._score || a.title.localeCompare(b.title));
 
-function escapeHtml(s){ return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m])); }
-function escapeAttr(s){ return escapeHtml(s).replace(/"/g, "&quot;"); }
+    return items;
+  }
 
-async function fetchDir(dir){
-  const url = `https://api.github.com/repos/${OWNER}/${REPO}/contents/${dir}?ref=${BRANCH}`;
-  const res = await fetch(url, {headers:{'Accept':'application/vnd.github+json'}});
-  if(!res.ok) throw new Error(`GitHub API failed for ${dir}: ${res.status}`);
-  const data = await res.json();
-  // files only
-  return (Array.isArray(data) ? data : [])
-    .filter(x => x.type === "file")
-    .map(x => ({ name: x.name, path: `${dir}/${x.name}` }));
-}
+  function escapeHtml(s){
+    return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+  }
+  function escapeAttr(s){ return escapeHtml(s).replace(/"/g, "&quot;"); }
 
-async function load(){
-  try{
-    els.status.textContent = "Indexing from repo…";
+  function updateCounts(){
+    const all = state.items.length;
+    const macros = state.items.filter(i => i.type === "macro").length;
+    const procs  = state.items.filter(i => i.type === "process").length;
+    els.countAll.textContent = String(all);
+    els.countMacros.textContent = String(macros);
+    els.countProcesses.textContent = String(procs);
+  }
 
-    const [macros, processes] = await Promise.all([
-      fetchDir("macros"),
-      fetchDir("processes")
-    ]);
+  function render(){
+    const items = filteredItems();
+    els.list.innerHTML = "";
+    els.shown.textContent = String(items.length);
+    els.empty.style.display = items.length ? "none" : "block";
 
-    const items = [
-      ...macros.map(f => makeItem({type:"macro", ...f})),
-      ...processes.map(f => makeItem({type:"process", ...f}))
-    ];
+    for(const item of items){
+      const card = document.createElement("div");
+      card.className = "card";
+      const badgeClass = item.type === "macro" ? "badge macro" : "badge process";
+      const badgeText  = item.type === "macro" ? "Macro" : "Process";
+      const tags = (item.tags || []).map(t => `<span class="tag">${escapeHtml(t)}</span>`).join("");
 
-    // If the folders exist but are empty, we still fall back to seed.
-    state.items = items.length ? items : SEED.slice();
+      card.innerHTML = `
+        <a href="${escapeAttr(item.url)}">
+          <div class="card-top">
+            <h3 class="title">${escapeHtml(item.title)}</h3>
+            <span class="${badgeClass}">${badgeText}</span>
+          </div>
+          ${item.description ? `<div class="desc">${escapeHtml(item.description)}</div>` : ``}
+          ${tags ? `<div class="tags">${tags}</div>` : ``}
+        </a>
+      `;
+      els.list.appendChild(card);
+    }
+  }
 
-    updateCounts();
-    els.status.textContent = items.length ? "Ready" : "Ready (seed data only)";
-    render();
-  }catch(err){
-    console.warn(err);
-    state.items = SEED.slice();
-    updateCounts();
-    els.status.textContent = "Ready (seed data only — GitHub API blocked/rate-limited)";
+  function setFilter(next){
+    state.filter = next;
+    for(const b of els.tabs){
+      b.setAttribute("aria-pressed", b.dataset.filter === next ? "true" : "false");
+    }
     render();
   }
-}
 
-els.q.addEventListener("input", () => {
-  state.q = els.q.value;
-  render();
-});
+  async function fetchDir(dir){
+    const url = `https://api.github.com/repos/${OWNER}/${REPO}/contents/${dir}?ref=${BRANCH}`;
+    const res = await fetch(url, { headers: { "Accept": "application/vnd.github+json" } });
+    if(!res.ok) throw new Error(`GitHub API failed for ${dir}: ${res.status}`);
+    const data = await res.json();
+    return (Array.isArray(data) ? data : [])
+      .filter(x => x.type === "file")
+      .map(x => ({ name: x.name, path: `${dir}/${x.name}` }));
+  }
 
-els.clear.addEventListener("click", () => {
-  els.q.value = "";
-  state.q = "";
-  els.q.focus();
-  render();
-});
+  async function load(){
+    try{
+      els.status.textContent = "Indexing from repo…";
+      const [macros, processes] = await Promise.all([ fetchDir("macros"), fetchDir("processes") ]);
 
-for(const b of els.tabs){
-  b.addEventListener("click", () => setFilter(b.dataset.filter));
-}
+      const items = [
+        ...macros.map(f => makeItem({ type:"macro", ...f })),
+        ...processes.map(f => makeItem({ type:"process", ...f })),
+      ];
 
-load();
+      state.items = items.length ? items : SEED.slice();
+      updateCounts();
+      els.status.textContent = items.length ? "Ready" : "Ready (seed only)";
+      render();
+    }catch(err){
+      console.warn(err);
+      state.items = SEED.slice();
+      updateCounts();
+      els.status.textContent = "Ready (seed only — API blocked/rate-limited)";
+      render();
+    }
+  }
+
+  els.q.addEventListener("input", () => { state.q = els.q.value; render(); });
+  els.clear.addEventListener("click", () => { els.q.value = ""; state.q = ""; els.q.focus(); render(); });
+  for(const b of els.tabs) b.addEventListener("click", () => setFilter(b.dataset.filter));
+
+  load();
 </script>
 </body>
 </html>
