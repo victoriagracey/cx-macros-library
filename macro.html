@@ -156,6 +156,10 @@
     const params = new URLSearchParams(location.search);
     const path = params.get("path");
 
+    // ✅ Fetch RAW markdown from GitHub (not the rendered GitHub Pages HTML)
+    const repo = "victoriagracey/cx-macros-library";
+    const rawBase = `https://raw.githubusercontent.com/${repo}/main/`;
+
     function showError(msg) {
       errorBox.style.display = "block";
       errorBox.textContent = msg;
@@ -163,22 +167,22 @@
 
     function stripBlockquote(text) {
       return text
-        .split("\\n")
-        .map(line => line.replace(/^\\s*>\\s?/, ""))
-        .join("\\n")
+        .split("\n")
+        .map(line => line.replace(/^\s*>\s?/, ""))
+        .join("\n")
         .trim();
     }
 
     function parseMacros(md) {
       // Split on "## " headings (matches your files)
-      const parts = md.split(/\\n##\\s+/g).slice(1);
+      const parts = md.split(/\n##\s+/g).slice(1);
       return parts.map(chunk => {
-        const lines = chunk.split("\\n");
+        const lines = chunk.split("\n");
         const title = (lines.shift() || "").trim();
-        const body = lines.join("\\n");
+        const body = lines.join("\n");
 
         // Grab the first blockquote (your macros are in > blocks)
-        const quoteMatch = body.match(/(^|\\n)>\\s.*(\\n>\\s.*)*/m);
+        const quoteMatch = body.match(/(^|\n)>\s.*(\n>\s.*)*/m);
         const macroText = quoteMatch ? stripBlockquote(quoteMatch[0]) : body.trim();
 
         return { title, macroText };
@@ -212,9 +216,7 @@
       pageSub.textContent = `Showing macros from: ${path}`;
 
       try {
-        // IMPORTANT: local files cannot fetch from GitHub due to browser security.
-        // So for local testing, you must keep a local copy of the markdown files too.
-        const res = await fetch(path);
+        const res = await fetch(rawBase + path, { cache: "no-store" });
         if (!res.ok) throw new Error(`Could not load: ${path} (${res.status})`);
         const md = await res.text();
 
