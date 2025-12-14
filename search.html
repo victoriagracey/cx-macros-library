@@ -131,9 +131,7 @@
       border-radius: 999px;
     }
 
-    .clear-btn:hover {
-      background: rgba(0,0,0,0.04);
-    }
+    .clear-btn:hover { background: rgba(0,0,0,0.04); }
 
     .filters {
       display: flex;
@@ -325,7 +323,7 @@
     </header>
 
     <div class="results-meta">
-      <span id="resultsCount">Loading…</span>
+      <span id="resultsCount">Indexing…</span>
     </div>
 
     <section class="results-grid" id="resultsGrid"></section>
@@ -336,13 +334,16 @@
   </div>
 
   <script>
-    // -------- Repo auto-index settings --------
+    // Repo settings
     const OWNER = "victoriagracey";
     const REPO  = "cx-macros-library";
     const BRANCH = "main";
 
-    // Optional: enrich specific files with nicer descriptions/tags.
-    // If a file isn't listed here, it still appears — it just uses filename -> title and auto-tags.
+    /**
+     * Optional enrichment map:
+     * Keeps your nice titles/tags/descriptions for known files.
+     * Anything not listed still appears (with auto-title + auto-tags).
+     */
     const ENRICH = {
       "macros/general.md": {
         title: "General Macros",
@@ -384,6 +385,7 @@
         tags: ["escalation", "internal notes", "handovers", "engineering"],
         description: "Internal templates for clean case handovers and escalations to other teams."
       },
+
       "processes/troubleshooting-workflows.md": {
         title: "Troubleshooting Workflows",
         tags: ["troubleshooting", "workflow", "diagnosis"],
@@ -411,7 +413,7 @@
       }
     };
 
-    // This is the live, auto-built list (replaces your previous hard-coded array)
+    // Live, auto-built list
     let items = [];
 
     const searchInput = document.getElementById("searchInput");
@@ -436,20 +438,18 @@
     function autoTagsFromPath(path) {
       const base = path.split("/").pop().replace(/\.md$/i, "");
       const parts = base.split(/[-_]+/g).filter(Boolean);
+      const stop = new Set(["and","the","a","an","of","to","for","in"]);
 
-      // Light cleanups
-      const stop = new Set(["and", "the", "a", "an", "of", "to", "for", "in"]);
       const tags = parts
         .map(p => p.trim().toLowerCase())
         .filter(p => p && !stop.has(p))
         .slice(0, 8);
 
-      // Add a couple of helpful synonyms (very small, not “AI magic”)
+      // tiny helpful nudges
       if (tags.includes("refunds") && !tags.includes("refund")) tags.push("refund");
       if (tags.includes("refund") && !tags.includes("billing")) tags.push("billing");
       if (tags.includes("outage") && !tags.includes("incident")) tags.push("incident");
 
-      // Unique
       return Array.from(new Set(tags));
     }
 
@@ -491,12 +491,9 @@
     }
 
     function setCounts() {
-      const total = items.length;
-      const macroCount = items.filter(i => i.type === "macro").length;
-      const processCount = items.filter(i => i.type === "process").length;
-      countAll.textContent = total;
-      countMacro.textContent = macroCount;
-      countProcess.textContent = processCount;
+      countAll.textContent = items.length;
+      countMacro.textContent = items.filter(i => i.type === "macro").length;
+      countProcess.textContent = items.filter(i => i.type === "process").length;
     }
 
     function render() {
@@ -506,7 +503,6 @@
       );
 
       resultsGrid.innerHTML = "";
-
       emptyState.style.display = filtered.length === 0 ? "block" : "none";
 
       filtered.forEach((item) => {
@@ -597,7 +593,6 @@
     async function init() {
       try {
         resultsCount.textContent = "Indexing…";
-
         const [macros, processes] = await Promise.all([
           fetchDir("macros", "macro"),
           fetchDir("processes", "process")
@@ -605,16 +600,18 @@
 
         items = [...macros, ...processes];
 
-        // Nice consistent order (macros first, then processes, then alpha)
-        items.sort((a,b) => (a.type === b.type ? a.title.localeCompare(b.title) : (a.type === "macro" ? -1 : 1)));
+        // nice consistent ordering
+        items.sort((a,b) =>
+          a.type === b.type ? a.title.localeCompare(b.title) : (a.type === "macro" ? -1 : 1)
+        );
 
         setCounts();
         render();
       } catch (err) {
         console.warn(err);
-        resultsCount.textContent = "Couldn’t index files (GitHub API blocked/rate-limited). Try refresh in a minute.";
         items = [];
         setCounts();
+        resultsCount.textContent = "Couldn’t index files (GitHub API blocked/rate-limited). Refresh in a minute.";
         render();
       }
     }
