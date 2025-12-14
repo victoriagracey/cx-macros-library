@@ -1,588 +1,268 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>CX Library Search</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
-    :root {
-      --bg: #f7f3ff;
-      --bg-alt: #ffffff;
-      --accent: #7b5dd8;
-      --accent-soft: #e1d8ff;
-      --text: #2f2a3f;
-      --muted: #6b647f;
-      --border: #ddd3ff;
-      --shadow: 0 4px 16px rgba(61, 44, 129, 0.12);
-      --radius: 14px;
-      --font-main: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    :root{
+      --bg:#f7f3ff; --card:#fff; --text:#2f2a3f; --muted:#6b647f;
+      --accent:#7b5dd8; --border:#ddd3ff;
     }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--text)}
+    .wrap{max-width:980px;margin:0 auto;padding:28px 16px 56px}
+    h1{margin:0 0 8px;font-size:28px}
+    p{margin:0 0 18px;color:var(--muted);line-height:1.5}
 
-    * {
-      box-sizing: border-box;
-    }
+    .bar{display:flex;gap:10px;align-items:center;background:var(--card);border:1px solid var(--border);
+      border-radius:16px;padding:10px 12px;box-shadow:0 10px 30px rgba(0,0,0,.06)}
+    .bar input{flex:1;border:0;outline:0;font-size:16px;background:transparent;color:var(--text)}
+    .clear{border:0;background:transparent;font-size:18px;cursor:pointer;color:var(--muted);padding:6px 8px;border-radius:10px}
+    .clear:hover{background:#f1ecff}
 
-    /* 🌸 Corner gradient glow */
-    .corner-glow {
-      position: fixed;
-      top: -80px;
-      right: -80px;
-      width: 260px;
-      height: 260px;
-      background: radial-gradient(
-        circle at center,
-        rgba(139, 92, 246, 0.28),
-        rgba(255, 255, 255, 0) 70%
-      );
-      filter: blur(14px);
-      pointer-events: none;
-      z-index: 0;
-    }
+    .tabs{display:flex;gap:10px;margin:14px 0 0}
+    .tab{border:1px solid var(--border);background:var(--card);border-radius:999px;padding:8px 12px;cursor:pointer;
+      color:var(--muted);font-weight:600}
+    .tab[aria-pressed="true"]{color:var(--text);border-color:var(--accent);box-shadow:0 10px 25px rgba(123,93,216,.18)}
+    .meta{margin:14px 0 10px;color:var(--muted);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
 
-    body {
-      margin: 0;
-      padding: 24px;
-      font-family: var(--font-main);
-      background: radial-gradient(circle at top left, #f0e7ff 0, #fdfbff 50%, #f7f3ff 100%);
-      color: var(--text);
-    }
-
-    .app {
-      max-width: 960px;
-      margin: 0 auto;
-      background: rgba(255,255,255,0.9);
-      border-radius: 24px;
-      box-shadow: var(--shadow);
-      padding: 24px 24px 28px;
-      border: 1px solid var(--border);
-      backdrop-filter: blur(6px);
-      position: relative;
-      z-index: 1; /* make sure content sits above the glow */
-    }
-
-    .header {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-
-    .title {
-      font-size: 1.6rem;
-      font-weight: 700;
-      margin: 0 0 4px;
-      letter-spacing: 0.02em;
-    }
-
-    .subtitle {
-      margin: 0;
-      font-size: 0.95rem;
-      color: var(--muted);
-    }
-
-    .search-row {
-      margin-top: 18px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .search-input-wrap {
-      position: relative;
-      flex: 1 1 260px;
-      max-width: 500px;
-    }
-
-    .search-input {
-      width: 100%;
-      padding: 10px 36px 10px 34px;
-      border-radius: 999px;
-      border: 1px solid var(--border);
-      font-size: 0.95rem;
-      outline: none;
-      background: #fdfbff;
-      color: var(--text);
-      box-shadow: 0 1px 4px rgba(0,0,0,0.04) inset;
-    }
-
-    .search-input:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 2px rgba(123, 93, 216, 0.18);
-    }
-
-    .search-icon {
-      position: absolute;
-      left: 11px;
-      top: 50%;
-      transform: translateY(-50%);
-      font-size: 0.95rem;
-      color: var(--muted);
-    }
-
-    .clear-btn {
-      position: absolute;
-      right: 10px;
-      top: 50%;
-      transform: translateY(-50%);
-      border: none;
-      background: transparent;
-      color: var(--muted);
-      cursor: pointer;
-      font-size: 0.9rem;
-      padding: 2px 4px;
-      border-radius: 999px;
-    }
-
-    .clear-btn:hover {
-      background: rgba(0,0,0,0.04);
-    }
-
-    .filters {
-      display: flex;
-      gap: 6px;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
-
-    .pill {
-      border-radius: 999px;
-      padding: 6px 12px;
-      font-size: 0.8rem;
-      border: 1px solid var(--border);
-      background: #fdfbff;
-      color: var(--muted);
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .pill span.count {
-      background: var(--accent-soft);
-      color: var(--accent);
-      padding: 2px 7px;
-      border-radius: 999px;
-      font-size: 0.7rem;
-    }
-
-    .pill.active {
-      background: var(--accent);
-      color: #fff;
-      border-color: var(--accent);
-    }
-
-    .pill.active span.count {
-      background: rgba(255,255,255,0.14);
-      color: #fff;
-    }
-
-    .results-meta {
-      margin: 16px 4px 8px;
-      font-size: 0.8rem;
-      color: var(--muted);
-      text-align: left;
-    }
-
-    .results-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 12px;
-      margin-top: 8px;
-    }
-
-    .card {
-      background: var(--bg-alt);
-      border-radius: var(--radius);
-      padding: 12px 12px 12px;
-      border: 1px solid rgba(221,211,255,0.8);
-      box-shadow: 0 2px 8px rgba(61, 44, 129, 0.06);
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      transition: transform 0.08s ease-out, box-shadow 0.08s ease-out, border-color 0.08s;
-    }
-
-    .card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 14px rgba(61, 44, 129, 0.13);
-      border-color: var(--accent-soft);
-    }
-
-    .card-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 8px;
-    }
-
-    .card-title {
-      margin: 0;
-      font-size: 0.95rem;
-      font-weight: 600;
-    }
-
-    .badge {
-      font-size: 0.7rem;
-      padding: 2px 8px;
-      border-radius: 999px;
-      background: var(--accent-soft);
-      color: var(--accent);
-      white-space: nowrap;
-    }
-
-    .card-desc {
-      margin: 0;
-      font-size: 0.8rem;
-      color: var(--muted);
-    }
-
-    .tags {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 4px;
-      margin-top: 4px;
-    }
-
-    .tag {
-      font-size: 0.7rem;
-      padding: 2px 6px;
-      border-radius: 999px;
-      background: #f3efff;
-      color: #5a4aa8;
-    }
-
-    .card-footer {
-      margin-top: 6px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .link {
-      font-size: 0.8rem;
-      color: var(--accent);
-      text-decoration: none;
-      font-weight: 500;
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .link:hover {
-      text-decoration: underline;
-    }
-
-    .file-path {
-      font-size: 0.7rem;
-      color: var(--muted);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      max-width: 160px;
-    }
-
-    .empty {
-      margin-top: 16px;
-      text-align: center;
-      font-size: 0.85rem;
-      color: var(--muted);
-    }
-
-    @media (max-width: 600px) {
-      .app {
-        padding: 16px;
-      }
-      .title {
-        font-size: 1.3rem;
-      }
-      .search-row {
-        flex-direction: column;
-        align-items: stretch;
-      }
-      .results-meta {
-        text-align: center;
-      }
-      .file-path {
-        max-width: 110px;
-      }
-    }
+    .list{display:grid;gap:10px;margin-top:10px}
+    .item{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:14px 14px 12px;
+      box-shadow:0 10px 30px rgba(0,0,0,.05)}
+    .top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+    .title{margin:0;font-size:16px}
+    .badge{font-size:12px;padding:4px 10px;border-radius:999px;border:1px solid var(--border);color:var(--muted)}
+    .badge.macro{border-color:#cfe7d6;background:#f4fbf6}
+    .badge.process{border-color:#d5d8fb;background:#f5f6ff}
+    .desc{margin:6px 0 0;color:var(--muted);line-height:1.45;font-size:14px}
+    .tags{margin:10px 0 0;display:flex;gap:6px;flex-wrap:wrap}
+    .tag{font-size:12px;color:var(--muted);border:1px solid var(--border);border-radius:999px;padding:3px 8px}
+    a{color:inherit;text-decoration:none}
+    a:hover .title{text-decoration:underline}
+    .empty{padding:16px;color:var(--muted)}
+    .status{font-size:13px;color:var(--muted)}
+    code{background:#f1ecff;padding:2px 6px;border-radius:8px}
   </style>
 </head>
+
 <body>
-  <div class="corner-glow"></div>
+  <div class="wrap">
+    <h1>CX Library Search</h1>
+    <p>Type what you need (e.g. “refund”, “outage”, “billing”, “accessibility”) and filter by macros or processes.</p>
 
-  <div class="app">
-    <header class="header">
-      <h1 class="title">CX Library Search</h1>
-      <p class="subtitle">Type what you need (e.g. “refund”, “outage”, “billing”, “accessibility”) and filter by macros or processes.</p>
-      <div class="search-row">
-        <div class="search-input-wrap">
-          <span class="search-icon">🔍</span>
-          <input
-            type="text"
-            id="searchInput"
-            class="search-input"
-            placeholder="Search macros, processes, topics…"
-            autocomplete="off"
-          />
-          <button class="clear-btn" id="clearBtn" title="Clear search">✕</button>
-        </div>
-        <div class="filters">
-          <button class="pill active" data-filter="all">All <span class="count" id="count-all">0</span></button>
-          <button class="pill" data-filter="macro">Macros <span class="count" id="count-macro">0</span></button>
-          <button class="pill" data-filter="process">Processes <span class="count" id="count-process">0</span></button>
-        </div>
-      </div>
-    </header>
-
-    <div class="results-meta">
-      <span id="resultsCount">0 items</span>
+    <div class="bar">
+      <input id="q" type="search" placeholder="Search macros + processes…" autocomplete="off" />
+      <button class="clear" id="clear" title="Clear">✕</button>
     </div>
 
-    <section class="results-grid" id="resultsGrid"></section>
-    <div class="empty" id="emptyState" style="display:none;">
-      No matches found. Try a broader term like <strong>refund</strong>, <strong>billing</strong>, <strong>technical</strong>, or <strong>outage</strong>.
+    <div class="tabs" role="group" aria-label="Filter">
+      <button class="tab" data-filter="all" aria-pressed="true">All <span id="countAll">0</span></button>
+      <button class="tab" data-filter="macro" aria-pressed="false">Macros <span id="countMacros">0</span></button>
+      <button class="tab" data-filter="process" aria-pressed="false">Processes <span id="countProcesses">0</span></button>
+    </div>
+
+    <div class="meta">
+      <div><span id="shown">0</span> items</div>
+      <div class="status" id="status">Loading…</div>
+    </div>
+
+    <div class="list" id="list"></div>
+    <div class="empty" id="empty" style="display:none;">
+      No matches found. Try a broader term like <code>refund</code>, <code>billing</code>, <code>technical</code>, or <code>outage</code>.
     </div>
   </div>
 
-  <script>
-    // Your library entries – update or add more anytime
-    const items = [
-      // MACROS
-      {
-        title: "General Macros",
-        type: "macro",
-        path: "macros/general.md",
-        tags: ["general", "first response", "follow-up", "closing"],
-        description: "Core macros for acknowledgements, updates, and closing conversations."
-      },
-      {
-        title: "Refunds & Compensation Macros",
-        type: "macro",
-        path: "macros/refunds-and-compensation.md",
-        tags: ["refund", "compensation", "goodwill", "billing"],
-        description: "Ready-to-use wording for refunds, partial credits, and goodwill gestures."
-      },
-      {
-        title: "Technical Issues Macros",
-        type: "macro",
-        path: "macros/technical-issues.md",
-        tags: ["technical", "bug", "issue", "troubleshooting", "engineering"],
-        description: "Macros for acknowledging, troubleshooting, and escalating technical problems."
-      },
-      {
-        title: "Membership & Billing Macros",
-        type: "macro",
-        path: "macros/membership-and-billing.md",
-        tags: ["billing", "membership", "subscription", "payments", "charges"],
-        description: "Templates for billing confusion, failed payments, plan changes, and cancellations."
-      },
-      {
-        title: "Social Media Response Macros",
-        type: "macro",
-        path: "macros/social-media.md",
-        tags: ["social", "twitter", "facebook", "instagram", "public", "short replies"],
-        description: "Short, brand-safe responses for public social media conversations."
-      },
-      {
-        title: "Accessibility-Friendly Macros",
-        type: "macro",
-        path: "macros/accessibility.md",
-        tags: ["accessibility", "plain language", "neurodivergent", "inclusive"],
-        description: "Macros designed with accessibility, clarity, and reduced cognitive load in mind."
-      },
-      {
-        title: "Tone Variations",
-        type: "macro",
-        path: "macros/tone-variations.md",
-        tags: ["tone", "formal", "warm", "concise", "empathetic"],
-        description: "The same message expressed in formal, warm, concise, and empathetic tones."
-      },
-      {
-        title: "Escalations & Internal Notes",
-        type: "macro",
-        path: "macros/escalations-and-internal-notes.md",
-        tags: ["escalation", "internal notes", "handovers", "engineering"],
-        description: "Internal templates for clean case handovers and escalations to other teams."
-      },
+<script>
+/**
+ * Works in two modes:
+ * 1) Auto-index: pulls filenames from your repo via GitHub API (no build step).
+ * 2) Fallback: uses SEED below if API rate-limits or fails.
+ *
+ * You can edit SEED anytime to make results prettier (titles, tags, descriptions).
+ */
+const OWNER = "victoriagracey";
+const REPO  = "cx-macros-library";
+const BRANCH = "main";
 
-      // PROCESSES
-      {
-        title: "Troubleshooting Workflows",
-        type: "process",
-        path: "processes/troubleshooting-workflows.md",
-        tags: ["troubleshooting", "workflow", "diagnosis"],
-        description: "System-neutral troubleshooting flows for general issues, login, payments, apps, and web."
-      },
-      {
-        title: "Outage Playbook",
-        type: "process",
-        path: "processes/outage-playbook.md",
-        tags: ["outage", "incident", "status", "communication"],
-        description: "Step-by-step guide for identifying, classifying, and communicating service outages."
-      },
-      {
-        title: "Cancellations Process",
-        type: "process",
-        path: "processes/cancellations-process.md",
-        tags: ["cancellation", "subscription", "churn"],
-        description: "Structured workflow for handling cancellation requests and communicating clearly with customers."
-      },
-      {
-        title: "Refunds Process",
-        type: "process",
-        path: "processes/refunds-process.md",
-        tags: ["refunds", "billing", "eligibility", "policy"],
-        description: "System-neutral refund assessment and processing flow, including communication templates."
-      },
-      {
-        title: "Verification Checklist",
-        type: "process",
-        path: "processes/verification-checklist.md",
-        tags: ["verification", "security", "identity", "compliance"],
-        description: "Checklist for safely verifying customers before sharing or changing account information."
-      }
+const SEED = [
+  // You can add your own entries here any time.
+  // { type:"macro", title:"Refund approved", url:"macros/refunds-and-compensation.md", tags:["refunds","payments"], description:"Refund processed + what to expect next." },
+];
+
+const state = {
+  filter: "all",
+  q: "",
+  items: []
+};
+
+const els = {
+  q: document.getElementById("q"),
+  clear: document.getElementById("clear"),
+  list: document.getElementById("list"),
+  empty: document.getElementById("empty"),
+  shown: document.getElementById("shown"),
+  status: document.getElementById("status"),
+  countAll: document.getElementById("countAll"),
+  countMacros: document.getElementById("countMacros"),
+  countProcesses: document.getElementById("countProcesses"),
+  tabs: Array.from(document.querySelectorAll(".tab")),
+};
+
+function niceTitleFromFilename(name){
+  // "refunds-and-compensation.md" -> "Refunds And Compensation"
+  return name.replace(/\.[^/.]+$/, "")
+    .replace(/[-_]+/g, " ")
+    .replace(/\b\w/g, c => c.toUpperCase());
+}
+
+function makeItem({type, path, name}){
+  return {
+    type,
+    title: niceTitleFromFilename(name),
+    url: path, // relative to the site root
+    tags: [],
+    description: ""
+  };
+}
+
+function score(item, q){
+  if(!q) return 1;
+  const hay = (item.title + " " + (item.description||"") + " " + (item.tags||[]).join(" ")).toLowerCase();
+  const needle = q.toLowerCase().trim();
+  if(!needle) return 1;
+  if(hay.includes(needle)) return 10;
+  // light token scoring
+  const parts = needle.split(/\s+/).filter(Boolean);
+  let s = 0;
+  for(const p of parts) if(hay.includes(p)) s += 3;
+  return s;
+}
+
+function filteredItems(){
+  let items = state.items.slice();
+
+  if(state.filter !== "all"){
+    items = items.filter(i => i.type === state.filter);
+  }
+
+  const q = state.q.trim();
+  items = items
+    .map(i => ({...i, _score: score(i, q)}))
+    .filter(i => q ? i._score > 0 : true)
+    .sort((a,b) => b._score - a._score || a.title.localeCompare(b.title));
+
+  return items;
+}
+
+function render(){
+  const items = filteredItems();
+  els.list.innerHTML = "";
+
+  els.shown.textContent = String(items.length);
+  els.empty.style.display = items.length ? "none" : "block";
+
+  for(const item of items){
+    const card = document.createElement("div");
+    card.className = "item";
+
+    const badgeClass = item.type === "macro" ? "badge macro" : "badge process";
+    const badgeText  = item.type === "macro" ? "Macro" : "Process";
+
+    const tags = (item.tags || []).map(t => `<span class="tag">${escapeHtml(t)}</span>`).join("");
+
+    card.innerHTML = `
+      <a href="${escapeAttr(item.url)}">
+        <div class="top">
+          <h3 class="title">${escapeHtml(item.title)}</h3>
+          <span class="${badgeClass}">${badgeText}</span>
+        </div>
+        ${item.description ? `<div class="desc">${escapeHtml(item.description)}</div>` : ``}
+        ${tags ? `<div class="tags">${tags}</div>` : ``}
+      </a>
+    `;
+    els.list.appendChild(card);
+  }
+}
+
+function setFilter(next){
+  state.filter = next;
+  for(const b of els.tabs){
+    b.setAttribute("aria-pressed", b.dataset.filter === next ? "true" : "false");
+  }
+  render();
+}
+
+function updateCounts(){
+  const all = state.items.length;
+  const macros = state.items.filter(i => i.type === "macro").length;
+  const procs = state.items.filter(i => i.type === "process").length;
+
+  els.countAll.textContent = String(all);
+  els.countMacros.textContent = String(macros);
+  els.countProcesses.textContent = String(procs);
+}
+
+function escapeHtml(s){ return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m])); }
+function escapeAttr(s){ return escapeHtml(s).replace(/"/g, "&quot;"); }
+
+async function fetchDir(dir){
+  const url = `https://api.github.com/repos/${OWNER}/${REPO}/contents/${dir}?ref=${BRANCH}`;
+  const res = await fetch(url, {headers:{'Accept':'application/vnd.github+json'}});
+  if(!res.ok) throw new Error(`GitHub API failed for ${dir}: ${res.status}`);
+  const data = await res.json();
+  // files only
+  return (Array.isArray(data) ? data : [])
+    .filter(x => x.type === "file")
+    .map(x => ({ name: x.name, path: `${dir}/${x.name}` }));
+}
+
+async function load(){
+  try{
+    els.status.textContent = "Indexing from repo…";
+
+    const [macros, processes] = await Promise.all([
+      fetchDir("macros"),
+      fetchDir("processes")
+    ]);
+
+    const items = [
+      ...macros.map(f => makeItem({type:"macro", ...f})),
+      ...processes.map(f => makeItem({type:"process", ...f}))
     ];
 
-    const searchInput = document.getElementById("searchInput");
-    const clearBtn = document.getElementById("clearBtn");
-    const resultsGrid = document.getElementById("resultsGrid");
-    const resultsCount = document.getElementById("resultsCount");
-    const emptyState = document.getElementById("emptyState");
-    const filterButtons = document.querySelectorAll(".pill");
-    const countAll = document.getElementById("count-all");
-    const countMacro = document.getElementById("count-macro");
-    const countProcess = document.getElementById("count-process");
+    // If the folders exist but are empty, we still fall back to seed.
+    state.items = items.length ? items : SEED.slice();
 
-    // Set counts
-    const total = items.length;
-    const macroCount = items.filter(i => i.type === "macro").length;
-    const processCount = items.filter(i => i.type === "process").length;
-    countAll.textContent = total;
-    countMacro.textContent = macroCount;
-    countProcess.textContent = processCount;
-
-    let currentFilter = "all";
-
-    function matchesQuery(item, query) {
-      if (!query) return true;
-      const q = query.toLowerCase();
-      return (
-        item.title.toLowerCase().includes(q) ||
-        item.description.toLowerCase().includes(q) ||
-        item.tags.some(tag => tag.toLowerCase().includes(q))
-      );
-    }
-
-    function passesFilter(item, filter) {
-      if (filter === "all") return true;
-      return item.type === filter;
-    }
-
-    function render() {
-      const query = searchInput.value.trim();
-      const filtered = items.filter(
-        (item) => matchesQuery(item, query) && passesFilter(item, currentFilter)
-      );
-
-      resultsGrid.innerHTML = "";
-
-      if (filtered.length === 0) {
-        emptyState.style.display = "block";
-      } else {
-        emptyState.style.display = "none";
-      }
-
-      filtered.forEach((item) => {
-        const card = document.createElement("article");
-        card.className = "card";
-
-        const header = document.createElement("div");
-        header.className = "card-header";
-
-        const title = document.createElement("h2");
-        title.className = "card-title";
-        title.textContent = item.title;
-
-        const badge = document.createElement("span");
-        badge.className = "badge";
-        badge.textContent = item.type === "macro" ? "Macro" : "Process";
-
-        header.appendChild(title);
-        header.appendChild(badge);
-
-        const desc = document.createElement("p");
-        desc.className = "card-desc";
-        desc.textContent = item.description;
-
-        const tagWrap = document.createElement("div");
-        tagWrap.className = "tags";
-        item.tags.forEach((t) => {
-          const tag = document.createElement("span");
-          tag.className = "tag";
-          tag.textContent = t;
-          tagWrap.appendChild(tag);
-        });
-
-        const footer = document.createElement("div");
-        footer.className = "card-footer";
-
-        const link = document.createElement("a");
-        link.className = "link";
-        link.href = `macro.html?path=${item.path}`;
-        link.textContent = "Open file";
-        link.target = "_blank";
-        link.rel = "noopener noreferrer";
-
-        const arrow = document.createElement("span");
-        arrow.textContent = "↗";
-        link.appendChild(arrow);
-
-        const filePath = document.createElement("span");
-        filePath.className = "file-path";
-        filePath.textContent = item.path;
-
-        footer.appendChild(link);
-        footer.appendChild(filePath);
-
-        card.appendChild(header);
-        card.appendChild(desc);
-        card.appendChild(tagWrap);
-        card.appendChild(footer);
-
-        resultsGrid.appendChild(card);
-      });
-
-      const labelFilter =
-        currentFilter === "all"
-          ? "items"
-          : currentFilter === "macro"
-          ? "macros"
-          : "processes";
-
-      resultsCount.textContent = `${filtered.length} ${labelFilter} shown`;
-    }
-
-    searchInput.addEventListener("input", render);
-
-    clearBtn.addEventListener("click", () => {
-      searchInput.value = "";
-      searchInput.focus();
-      render();
-    });
-
-    filterButtons.forEach((btn) => {
-      btn.addEventListener("click", () => {
-        filterButtons.forEach((b) => b.classList.remove("active"));
-        btn.classList.add("active");
-        currentFilter = btn.getAttribute("data-filter");
-        render();
-      });
-    });
-
-    // Initial render
+    updateCounts();
+    els.status.textContent = items.length ? "Ready" : "Ready (seed data only)";
     render();
-  </script>
+  }catch(err){
+    console.warn(err);
+    state.items = SEED.slice();
+    updateCounts();
+    els.status.textContent = "Ready (seed data only — GitHub API blocked/rate-limited)";
+    render();
+  }
+}
+
+els.q.addEventListener("input", () => {
+  state.q = els.q.value;
+  render();
+});
+
+els.clear.addEventListener("click", () => {
+  els.q.value = "";
+  state.q = "";
+  els.q.focus();
+  render();
+});
+
+for(const b of els.tabs){
+  b.addEventListener("click", () => setFilter(b.dataset.filter));
+}
+
+load();
+</script>
 </body>
 </html>
