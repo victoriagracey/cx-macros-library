@@ -175,7 +175,7 @@
 
     function parseMacros(md) {
       // Split on "## " headings (matches your files)
-      const parts = md.split(/\n##\s+/g).slice(1);
+      const parts = md.split(/(?:^|\r?\n)##\s+/g).slice(1);
       return parts.map(chunk => {
         const lines = chunk.split("\n");
         const title = (lines.shift() || "").trim();
@@ -272,3 +272,4 @@
   </script>
 </body>
 </html>
+
