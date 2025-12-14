@@ -196,7 +196,9 @@
       }
 
       pageTitle.textContent = path.split("/").pop();
-      pageSub.textContent = `Showing macros from: ${path}`;
+      pageSub.textContent = `Showing content from: ${path}`;
+
+      const isMacroFile = path.startsWith("macros/");
 
       try {
         const res = await fetch(rawBase + path, { cache: "no-store" });
@@ -207,7 +209,7 @@
 
         const macros = parseMacros(md);
         if (!macros.length) {
-          showError("Loaded the file, but couldn’t find any macros.");
+          showError("Loaded the file, but couldn’t find any sections to display.");
           return;
         }
 
@@ -226,18 +228,30 @@
           row.style.display = "flex";
           row.style.justifyContent = "space-between";
           row.style.alignItems = "center";
+          row.style.gap = "10px";
+          row.style.flexWrap = "wrap";
 
-          const meta = document.createElement("div");
-          meta.className = "meta";
-          meta.textContent = "Copy grabs this macro only.";
+          if (isMacroFile) {
+            const meta = document.createElement("div");
+            meta.className = "meta";
+            meta.textContent = "Copy grabs this macro only.";
 
-          const btn = document.createElement("button");
-          btn.className = "btn";
-          btn.textContent = "Copy macro";
-          btn.onclick = () => copyText(btn, m.macroText);
+            const btn = document.createElement("button");
+            btn.className = "btn";
+            btn.type = "button";
+            btn.textContent = "Copy macro";
+            btn.onclick = () => copyText(btn, m.macroText);
 
-          row.append(meta, btn);
-          card.append(h2, pre, row);
+            row.append(meta, btn);
+            card.append(h2, pre, row);
+          } else {
+            const meta = document.createElement("div");
+            meta.className = "meta";
+            meta.textContent = "Read-only process.";
+            row.append(meta);
+            card.append(h2, pre, row);
+          }
+
           grid.append(card);
         });
       } catch (e) {
