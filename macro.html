@@ -47,6 +47,13 @@
       flex-wrap: wrap;
     }
 
+    .title-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
     .title {
       margin: 0;
       font-size: 1.3rem;
@@ -58,6 +65,22 @@
       color: var(--muted);
       font-size: 0.9rem;
     }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 10px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 800;
+      border: 1px solid var(--border);
+      background: #fff;
+      color: var(--muted);
+      user-select: none;
+    }
+    .badge.macro { background: #f4fbf6; border-color: #cfe7d6; color: #2f7a4b; }
+    .badge.process { background: #f5f6ff; border-color: #d5d8fb; color: #3a46b0; }
 
     .btn {
       border: 1px solid var(--border);
@@ -97,6 +120,8 @@
       padding: 10px;
       white-space: pre-wrap;
       font-size: 0.82rem;
+      line-height: 1.55;
+      margin: 10px 0 12px;
     }
 
     .meta {
@@ -104,19 +129,78 @@
       color: var(--muted);
     }
 
-    /* PROCESS DOCUMENT */
+    /* PROCESS DOCUMENT BASE */
+    article {
+      line-height: 1.65;
+      font-size: 0.95rem;
+    }
+
+    article h1 {
+      font-size: 1.4rem;
+      margin: 0 0 10px;
+    }
+
     article h2 {
-      margin-top: 28px;
+      margin-top: 26px;
+      font-size: 1.05rem;
+      padding-top: 12px;
+      border-top: 1px solid rgba(221,211,255,0.9);
     }
 
     article h3 {
-      margin-top: 18px;
+      margin-top: 16px;
       font-size: 1rem;
     }
 
-    article ul {
-      padding-left: 20px;
+    article ul, article ol {
+      padding-left: 22px;
+      margin: 8px 0 10px;
     }
+
+    article li { margin: 6px 0; }
+
+    article code {
+      background: #f1ecff;
+      padding: 2px 6px;
+      border-radius: 10px;
+    }
+
+    article pre {
+      background: #141321;
+      color: #f5f2ff;
+      padding: 14px;
+      border-radius: 14px;
+      overflow: auto;
+      border: 1px solid rgba(221,211,255,.35);
+    }
+
+    article blockquote {
+      margin: 14px 0;
+      padding: 10px 14px;
+      border-left: 6px solid var(--accent);
+      background: #ffffffaa;
+      border-radius: 12px;
+      color: var(--muted);
+    }
+
+    /* Process callouts: Ask / Template / Notes / Steps */
+    .callout {
+      border: 1px solid var(--border);
+      background: #ffffffcc;
+      border-radius: 16px;
+      padding: 12px 14px;
+      margin: 14px 0;
+      box-shadow: 0 6px 18px rgba(61,44,129,.08);
+    }
+    .callout-title {
+      font-weight: 900;
+      margin: 0 0 8px;
+      color: var(--text);
+    }
+    .callout.ask { border-left: 6px solid var(--accent); }
+    .callout.template { border-left: 6px solid #22c55e; }
+    .callout.notes { border-left: 6px solid #f59e0b; }
+    .callout.steps { border-left: 6px solid #3b82f6; }
 
     .error {
       margin-top: 20px;
@@ -132,7 +216,10 @@
   <div class="app">
     <div class="topbar">
       <div>
-        <h1 class="title" id="pageTitle">Viewer</h1>
+        <div class="title-row">
+          <h1 class="title" id="pageTitle">Viewer</h1>
+          <span class="badge" id="typeBadge" style="display:none;"></span>
+        </div>
         <p class="sub" id="pageSub"></p>
       </div>
       <a class="btn" href="search.html">Back to search</a>
@@ -147,6 +234,7 @@ const grid = document.getElementById("grid");
 const errorBox = document.getElementById("error");
 const pageTitle = document.getElementById("pageTitle");
 const pageSub = document.getElementById("pageSub");
+const typeBadge = document.getElementById("typeBadge");
 
 const params = new URLSearchParams(location.search);
 const path = params.get("path");
@@ -161,6 +249,20 @@ function showError(msg) {
 
 function stripBlockquote(text) {
   return text.split("\n").map(l => l.replace(/^>\s?/, "")).join("\n").trim();
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, m => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+  }[m]));
+}
+
+function inlineFormat(s) {
+  // basic **bold** and *italic* (good enough for your process docs)
+  let out = escapeHtml(s);
+  out = out.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+  out = out.replace(/\*(.+?)\*/g, "<em>$1</em>");
+  return out;
 }
 
 function parseMacros(md) {
@@ -187,6 +289,121 @@ async function copyText(btn, text) {
   setTimeout(() => btn.textContent = old, 900);
 }
 
+/**
+ * Minimal markdown-to-HTML for process docs (safe, predictable).
+ * - headings: #, ##, ###
+ * - bullet lists: "- item"
+ * - blockquotes: "> ..."
+ * - paragraphs
+ */
+function renderProcessMarkdown(md) {
+  const lines = md.split("\n");
+  let html = "";
+  let inUl = false;
+  let inBq = false;
+
+  function closeUl(){ if(inUl){ html += "</ul>"; inUl = false; } }
+  function closeBq(){ if(inBq){ html += "</blockquote>"; inBq = false; } }
+
+  for (let i=0; i<lines.length; i++){
+    const line = lines[i];
+
+    // blank line closes blocks
+    if(!line.trim()){
+      closeUl(); closeBq();
+      continue;
+    }
+
+    // headings
+    if(/^###\s+/.test(line)){
+      closeUl(); closeBq();
+      html += `<h3>${inlineFormat(line.replace(/^###\s+/, ""))}</h3>`;
+      continue;
+    }
+    if(/^##\s+/.test(line)){
+      closeUl(); closeBq();
+      html += `<h2>${inlineFormat(line.replace(/^##\s+/, ""))}</h2>`;
+      continue;
+    }
+    if(/^#\s+/.test(line)){
+      closeUl(); closeBq();
+      html += `<h1>${inlineFormat(line.replace(/^#\s+/, ""))}</h1>`;
+      continue;
+    }
+
+    // blockquote
+    if(/^>\s?/.test(line)){
+      closeUl();
+      if(!inBq){ html += `<blockquote>`; inBq = true; }
+      html += `<p>${inlineFormat(line.replace(/^>\s?/, ""))}</p>`;
+      continue;
+    } else {
+      closeBq();
+    }
+
+    // list
+    if(/^- /.test(line)){
+      if(!inUl){ html += "<ul>"; inUl = true; }
+      html += `<li>${inlineFormat(line.replace(/^- /, ""))}</li>`;
+      continue;
+    } else {
+      closeUl();
+    }
+
+    // paragraph
+    html += `<p>${inlineFormat(line)}</p>`;
+  }
+
+  closeUl(); closeBq();
+  return html;
+}
+
+function enhanceProcessCallouts(articleEl) {
+  const markers = ["ask:", "template:", "notes:", "steps:"];
+
+  const paras = Array.from(articleEl.querySelectorAll("p"));
+  const markerPs = paras.filter(p => markers.includes((p.textContent || "").trim().toLowerCase()));
+
+  for (const p of markerPs) {
+    const label = (p.textContent || "").trim().replace(":", "");
+    const key = label.toLowerCase();
+
+    const wrap = document.createElement("div");
+    wrap.className = `callout ${key}`;
+
+    const title = document.createElement("div");
+    title.className = "callout-title";
+    title.textContent = label;
+
+    wrap.appendChild(title);
+
+    let next = p.nextElementSibling;
+    while (next) {
+      const isHeading = /^H[1-6]$/.test(next.tagName);
+      const isMarker = next.tagName === "P" && markers.includes((next.textContent || "").trim().toLowerCase());
+      if (isHeading || isMarker) break;
+
+      const move = next;
+      next = next.nextElementSibling;
+      wrap.appendChild(move);
+    }
+
+    p.replaceWith(wrap);
+  }
+}
+
+function setTypeBadge(isProcess) {
+  typeBadge.style.display = "inline-flex";
+  typeBadge.classList.toggle("macro", !isProcess);
+  typeBadge.classList.toggle("process", isProcess);
+  typeBadge.textContent = isProcess ? "Process" : "Macro";
+}
+
+function niceFileTitle(p) {
+  const name = (p || "").split("/").pop() || "Viewer";
+  return name;
+}
+
 async function init() {
   if (!path) {
     showError("Missing ?path=");
@@ -194,11 +411,14 @@ async function init() {
   }
 
   const isProcess = path.startsWith("processes/");
-  pageTitle.textContent = path.split("/").pop();
+  pageTitle.textContent = niceFileTitle(path);
   pageSub.textContent = isProcess ? "Read-only process document" : "Copy-ready macros";
+  setTypeBadge(isProcess);
 
   try {
     const res = await fetch(rawBase + path);
+    if (!res.ok) throw new Error(`Could not load ${path} (${res.status})`);
+
     const md = (await res.text()).replace(/\r\n/g, "\n");
 
     grid.innerHTML = "";
@@ -235,13 +455,8 @@ async function init() {
       });
     } else {
       const article = document.createElement("article");
-      article.innerHTML = md
-        .replace(/^## (.*)$/gm, "<h2>$1</h2>")
-        .replace(/^### (.*)$/gm, "<h3>$1</h3>")
-        .replace(/^- (.*)$/gm, "<li>$1</li>")
-        .replace(/(<li>.*<\/li>)/gs, "<ul>$1</ul>")
-        .replace(/\n\n/g, "<br><br>");
-
+      article.innerHTML = renderProcessMarkdown(md);
+      enhanceProcessCallouts(article);
       grid.append(article);
     }
 
