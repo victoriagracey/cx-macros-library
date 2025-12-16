@@ -184,6 +184,19 @@
       gap: 12px;
       margin-top: 8px;
     }
+/* Subtle navigation cue */
+.nav-arrow {
+  margin-left: auto;
+  font-size: 1rem;
+  color: var(--accent);
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.card:hover .nav-arrow,
+.card:focus-visible .nav-arrow {
+  opacity: 1;
+}
 
     /* ✅ Clickable card styling */
     .card {
@@ -536,19 +549,25 @@
           }
         });
 
-        const header = document.createElement("div");
-        header.className = "card-header";
+       const header = document.createElement("div");
+header.className = "card-header";
 
-        const title = document.createElement("h2");
-        title.className = "card-title";
-        title.textContent = item.title;
+const title = document.createElement("h2");
+title.className = "card-title";
+title.textContent = item.title;
 
-        const badge = document.createElement("span");
-        badge.className = "badge";
-        badge.textContent = item.type === "macro" ? "Macro" : "Process";
+const badge = document.createElement("span");
+badge.className = "badge";
+badge.textContent = item.type === "macro" ? "Macro" : "Process";
 
-        header.appendChild(title);
-        header.appendChild(badge);
+// NEW: subtle nav arrow (hidden by CSS for now)
+const navArrow = document.createElement("span");
+navArrow.className = "nav-arrow";
+navArrow.textContent = "→";
+
+header.appendChild(title);
+header.appendChild(badge);
+header.appendChild(navArrow);
 
         const desc = document.createElement("p");
         desc.className = "card-desc";
