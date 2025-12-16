@@ -81,7 +81,7 @@ This repository serves as a portfolio example of:
 
 ## Live Demo
 
-[View the live site](INSERT_GITHUB_PAGES_URL)
+[View the live site](https://victoriagracey.github.io/cx-macros-library/)
 
 ---
 
