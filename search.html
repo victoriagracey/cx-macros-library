@@ -266,7 +266,7 @@
     .card-footer {
       margin-top: 6px;
       display: flex;
-      justify-content: flex-end; /* link removed, so push file path right */
+      justify-content: flex-end;
       align-items: center;
       gap: 8px;
     }
@@ -301,20 +301,16 @@
   <div class="corner-glow"></div>
 
   <div class="app">
+    <!-- ✅ FIXED: single header only -->
     <header class="header">
       <h1 class="title">CX Library Search</h1>
       <p class="subtitle">Type what you need (e.g. “refund”, “outage”, “billing”, “accessibility”) and filter by macros or processes.</p>
-<header class="header">
-  <h1 class="title">CX Library Search</h1>
 
-  <p class="subtitle">
-    Type what you need (e.g. “refund”, “outage”, “billing”, “accessibility”) and filter by macros or processes.
-  </p>
+      <!-- ✅ Upgrade 1 -->
+      <p class="subtitle" style="font-size: 0.85rem; margin-top: 6px;">
+        A lightweight, system-agnostic CX macro and process library designed for speed, clarity, and reuse.
+      </p>
 
-  <p class="subtitle" style="font-size: 0.85rem; margin-top: 6px;">
-    A lightweight, system-agnostic CX macro and process library designed for speed, clarity, and reuse.
-  </p>
-</header>
       <div class="search-row">
         <div class="search-input-wrap">
           <span class="search-icon">🔍</span>
@@ -511,7 +507,6 @@
     }
 
     function openItem(item) {
-      // Keeps your existing behavior: open macro.html with a querystring
       const href = `macro.html?path=${encodeURIComponent(item.path)}`;
       window.open(href, "_blank", "noopener,noreferrer");
     }
@@ -529,7 +524,7 @@
         const card = document.createElement("article");
         card.className = "card";
 
-        // ✅ Make whole tile clickable + accessible
+        // ✅ Whole tile clickable + accessible
         card.tabIndex = 0;
         card.setAttribute("role", "link");
         card.setAttribute("aria-label", `Open ${item.title}`);
