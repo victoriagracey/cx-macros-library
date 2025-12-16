@@ -1,18 +1,18 @@
+# CX Macros & Processes Library
 
-
-A lightweight, internal-style CX documentation system built with GitHub Pages that dynamically indexes Markdown content via the GitHub Contents API.
+A lightweight, internal CX documentation system built with GitHub Pages that dynamically indexes Markdown content via the GitHub Contents API.
 
 ---
 
 ## Overview
 
-Customer support teams rely on fast, consistent access to macros and process documentation. This library is built from real-world customer support experience and focuses on clarity, empathy, and operational consistency in high-volume environments.
+Customer support teams rely on fast, consistent access to macros and process documentation. This project is built from real-world customer support experience and focuses on clarity, empathy, and operational consistency in high-volume environments.
 
 The goal is not to sound scripted or robotic, but to enable faster, safer responses while maintaining a human tone across channels.
 
 ---
 
-## Who This Library Is For
+## Who This Is For
 
 * Customer support agents handling live chat, email, or social channels
 * CX teams looking to standardise tone without losing authenticity
@@ -25,9 +25,9 @@ The goal is not to sound scripted or robotic, but to enable faster, safer respon
 
 ### Macros
 
-Reusable, adaptable customer support replies for common scenarios:
+Reusable, adaptable customer support responses covering common scenarios such as:
 
-* General responses
+* General enquiries
 * Refunds and compensation
 * Delays and outages
 * Technical issues
@@ -38,7 +38,7 @@ Reusable, adaptable customer support replies for common scenarios:
 
 ### Processes
 
-System-neutral workflows designed to support consistent decision-making:
+System-neutral workflows designed to support consistent decision-making, including:
 
 * Troubleshooting workflows
 * Outage response playbooks
@@ -74,18 +74,18 @@ Content is indexed dynamically from the repository and presented through a clean
 This repository serves as a portfolio example of:
 
 * Internal CX knowledge base design
-* Process documentation and macro structuring
-* Practical use of GitHub Pages beyond static sites
+* Process flow documentation
+* Macro and workflow structuring
+* Practical use of GitHub Pages beyond static marketing sites
 
 ---
 
 ## Live Demo
 
-[View the live site](https://victoriagracey.github.io/cx-macros-library/)
+[https://victoriagracey.github.io/cx-macros-library/](https://victoriagracey.github.io/cx-macros-library/)
 
 ---
 
 ## Notes
 
-This project intentionally mirrors internal documentation systems rather than polished consumer-facing products. Content may evolve over time as workflows and language are refined.
-
+This project intentionally mirrors internal documentation systems rather than consumer-facing applications. The emphasis is on usability, maintainability, and real-worl
