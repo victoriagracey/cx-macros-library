@@ -82,7 +82,7 @@ This repository serves as a portfolio example of:
 
 ## Live Demo
 
-[https://victoriagracey.github.io/cx-macros-library/](https://victoriagracey.github.io/cx-macros-library/)
+[https://victoriagracey.github.io/cx-macros-library/](https://victoriagracey.github.io/cx-macros-library/search.html)
 
 ---
 
