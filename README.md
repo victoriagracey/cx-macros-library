@@ -1,4 +1,4 @@
-# CX Macros & Processes Library
+## Overview
 
 A lightweight, internal CX documentation system built with GitHub Pages that dynamically indexes Markdown content via the GitHub Contents API.
 
