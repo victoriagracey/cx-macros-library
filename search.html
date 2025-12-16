@@ -186,6 +186,7 @@
       margin-top: 8px;
     }
 
+    /* ✅ Clickable card styling */
     .card {
       background: var(--bg-alt);
       border-radius: var(--radius);
@@ -195,13 +196,28 @@
       display: flex;
       flex-direction: column;
       gap: 6px;
-      transition: transform 0.08s ease-out, box-shadow 0.08s ease-out, border-color 0.08s;
+
+      cursor: pointer;
+      user-select: none;
+      transition:
+        transform 0.14s ease,
+        box-shadow 0.14s ease,
+        border-color 0.14s ease,
+        background-color 0.14s ease;
     }
 
+    /* ✅ Hover colour change + lift */
     .card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 14px rgba(61, 44, 129, 0.13);
-      border-color: var(--accent-soft);
+      transform: translateY(-3px);
+      box-shadow: 0 10px 28px rgba(61, 44, 129, 0.14);
+      border-color: rgba(123, 93, 216, 0.35);
+      background-color: rgba(123, 93, 216, 0.06);
+    }
+
+    /* ✅ Keyboard focus */
+    .card:focus-visible {
+      outline: 3px solid rgba(123, 93, 216, 0.35);
+      outline-offset: 2px;
     }
 
     .card-header {
@@ -250,22 +266,10 @@
     .card-footer {
       margin-top: 6px;
       display: flex;
-      justify-content: space-between;
+      justify-content: flex-end; /* link removed, so push file path right */
       align-items: center;
       gap: 8px;
     }
-
-    .link {
-      font-size: 0.8rem;
-      color: var(--accent);
-      text-decoration: none;
-      font-weight: 500;
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .link:hover { text-decoration: underline; }
 
     .file-path {
       font-size: 0.7rem;
@@ -273,7 +277,7 @@
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      max-width: 160px;
+      max-width: 220px;
     }
 
     .empty {
@@ -288,7 +292,7 @@
       .title { font-size: 1.3rem; }
       .search-row { flex-direction: column; align-items: stretch; }
       .results-meta { text-align: center; }
-      .file-path { max-width: 110px; }
+      .file-path { max-width: 180px; }
     }
   </style>
 </head>
@@ -496,6 +500,12 @@
       countProcess.textContent = items.filter(i => i.type === "process").length;
     }
 
+    function openItem(item) {
+      // Keeps your existing behavior: open macro.html with a querystring
+      const href = `macro.html?path=${encodeURIComponent(item.path)}`;
+      window.open(href, "_blank", "noopener,noreferrer");
+    }
+
     function render() {
       const query = searchInput.value.trim();
       const filtered = items.filter(
@@ -508,6 +518,19 @@
       filtered.forEach((item) => {
         const card = document.createElement("article");
         card.className = "card";
+
+        // ✅ Make whole tile clickable + accessible
+        card.tabIndex = 0;
+        card.setAttribute("role", "link");
+        card.setAttribute("aria-label", `Open ${item.title}`);
+
+        card.addEventListener("click", () => openItem(item));
+        card.addEventListener("keydown", (e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            openItem(item);
+          }
+        });
 
         const header = document.createElement("div");
         header.className = "card-header";
@@ -539,22 +562,10 @@
         const footer = document.createElement("div");
         footer.className = "card-footer";
 
-        const link = document.createElement("a");
-        link.className = "link";
-        link.href = `macro.html?path=${encodeURIComponent(item.path)}`;
-        link.textContent = "Open file";
-        link.target = "_blank";
-        link.rel = "noopener noreferrer";
-
-        const arrow = document.createElement("span");
-        arrow.textContent = "↗";
-        link.appendChild(arrow);
-
         const filePath = document.createElement("span");
         filePath.className = "file-path";
         filePath.textContent = item.path;
 
-        footer.appendChild(link);
         footer.appendChild(filePath);
 
         card.appendChild(header);
