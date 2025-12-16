@@ -82,7 +82,7 @@ This repository serves as a portfolio example of:
 
 ## Live Demo
 
-(https://victoriagracey.github.io/cx-macros-library/search.html)
+You can explore the library via the [search interface](https://victoriagracey.github.io/cx-macros-library/search.html), which dynamically indexes the content.
 
 ---
 
